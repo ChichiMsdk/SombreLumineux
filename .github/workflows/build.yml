@@ -17,7 +17,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y build-essential git wget
-          wget https://github.com/devkitPro/installer/releases/download/v1.2.3/devkitpro-pacman.amd64.deb
+          wget https://github.com/devkitPro/installer/releases/download/v3.0.3/devkitProUpdater-3.0.3.exe
           dpkg -i devkitpro-pacman.amd64.deb
           dkp-pacman -Sy --noconfirm devkitARM gba-dev
 

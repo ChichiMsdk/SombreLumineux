@@ -11,16 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: devkitpro/devkitarm:latest
+      options: --entrypoint bash
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        shell: bash
 
       - name: Install GBA libraries
         run: dkp-pacman -Sy --noconfirm gba-dev
+        shell: bash
 
       - name: Build ROM
         run: make
+        shell: bash
         env:
           DEVKITPRO: /opt/devkitpro
           DEVKITARM: /opt/devkitpro/devkitARM

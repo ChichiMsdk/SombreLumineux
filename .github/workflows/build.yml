@@ -2,37 +2,38 @@ name: Build GBA ROM
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:latest
 
     steps:
-      - name: Install devkit tools
-        run: |
-          apt-get update
-          apt-get install -y build-essential git wget
-          wget https://github.com/devkitPro/installer/releases/download/v3.0.3/devkitProUpdater-3.0.3.exe
-          dpkg -i devkitpro-pacman.amd64.deb
-          dkp-pacman -Sy --noconfirm devkitARM gba-dev
-
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build ROM
+      - name: Install devkitPro keyring
+        run: |
+          wget https://apt.devkitpro.org/install-devkitpro-pacman
+          chmod +x install-devkitpro-pacman
+          sudo ./install-devkitpro-pacman
+
+      - name: Install GBA dev packages
+        run: sudo dkp-pacman -Sy --noconfirm gba-dev
+
+      - name: Set up environment
+        run: |
+          echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+          echo "DEVKITARM=/opt/devkitpro/devkitARM" >> $GITHUB_ENV
+          echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+          echo "/opt/devkitpro/devkitARM/bin" >> $GITHUB_PATH
+
+      - name: Build
         run: make
-        env:
-          DEVKITPRO: /opt/devkitpro
-          DEVKITARM: /opt/devkitpro/devkitARM
-          PATH: /opt/devkitpro/tools/bin:/opt/devkitpro/devkitARM/bin:$PATH
 
       - name: Upload ROM artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-game-rom
-          path: my_game.gba
+          name: game-rom
+          path: "*.gba"

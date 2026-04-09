@@ -13,11 +13,6 @@ jobs:
       image: devkitpro/devkitarm:latest
 
     steps:
-      - name: Install shell
-        run: |
-          apk update && apk add --no-cache bash sh
-        shell: sh
-
       - name: Checkout code
         uses: actions/checkout@v4
 

@@ -1,9 +1,7 @@
 name: Build GBA ROM
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -13,13 +11,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache devkitPro
+        id: cache-dkp
+        uses: actions/cache@v4
+        with:
+          path: /opt/devkitpro
+          key: devkitpro-gba-${{ runner.os }}-v1
+
       - name: Install devkitPro pacman
+        if: steps.cache-dkp.outputs.cache-hit != 'true'
         run: |
           wget -U "dkp-apt" https://apt.devkitpro.org/install-devkitpro-pacman
           chmod +x ./install-devkitpro-pacman
           sudo ./install-devkitpro-pacman
 
       - name: Install GBA dev packages
+        if: steps.cache-dkp.outputs.cache-hit != 'true'
         run: sudo dkp-pacman -Sy --noconfirm gba-dev
 
       - name: Set up environment
